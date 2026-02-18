@@ -1,0 +1,53 @@
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from .models import Cart, CartItem
+from .serializers import CartSerializer, CartItemSerializer
+from meals.models import Meal
+
+
+class CartViewSet(viewsets.ModelViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+
+    @action(detail=True, methods=['post'])
+    def add_meal(self, request, pk=None):
+        cart = self.get_object()
+        meal_id = request.data.get("meal_id")
+        quantity = request.data.get("quantity", 1)
+
+        meal = Meal.objects.get(id=meal_id)
+
+        item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            meal=meal
+        )
+
+        item.quantity += int(quantity)
+        item.save()
+
+        return Response({"message": "Meal ajouté au panier"})
+    @action(detail=True, methods=['get'])
+    def items(self, request, pk=None):
+        cart = self.get_object()
+        items = cart.cartitem_set.all()
+        serializer = CartItemSerializer(items, many=True)
+        return Response(serializer.data)
+    @action(detail=True, methods=['post'])
+    def remove_meal(self, request, pk=None):
+        cart = self.get_object()
+        meal_id = request.data.get("meal_id")
+
+        try:
+            item = CartItem.objects.get(cart=cart, meal_id=meal_id)
+            item.delete()
+            return Response({"message": "Meal supprimé du panier"})
+        except CartItem.DoesNotExist:
+            return Response({"error": "Meal non trouvé dans le panier"})
+
+
+
+class CartItemViewSet(viewsets.ModelViewSet):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
