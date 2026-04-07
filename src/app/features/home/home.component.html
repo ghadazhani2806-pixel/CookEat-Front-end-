@@ -1,83 +1,288 @@
-<!-- NAVBAR -->
-<nav class="navbar">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar" [class.scrolled]="navScrolled">
   <div class="logo">
-    Coo
-    <img src="assets/tomato.png" class="logo-img" />
-    kit
+    <img src="assets/tomato.png" class="logo-img" alt="CookEat Logo" />
   </div>
-
   <ul class="nav-links">
-    <li>Le concept</li>
-    <li>Au menu</li>
-    <li>Besoin d’aide ?</li>
+    <li><a href="#about">The Concept</a></li>
+    <li><a href="#menu">On the Menu</a></li>
+    <li><a href="#contact">Need Help?</a></li>
   </ul>
+  <div class="navbar-right">
+  <!-- If logged in as regular user -->
+  <ng-container *ngIf="isLoggedIn">
+    <a routerLink="/cart" class="nav-icon-link">
+      <i class="fa-solid fa-cart-shopping"></i>
+    </a>
+    <a routerLink="/profile" class="btn-client">
+      <i class="fa-solid fa-user"></i> My Profile
+    </a>
+  </ng-container>
 
-  <button class="btn-client">Espace client</button>
+  <!-- If not logged in -->
+  <a routerLink="/login" class="btn-client" *ngIf="!isLoggedIn">
+    <i class="fa-solid fa-user"></i> Login
+  </a>
+</div>
 </nav>
 
-<!-- COMMENT ÇA MARCHE -->
-<section class="how-it-works fade-in">
-  <h2>Comment ça marche ?</h2>
-  <p class="subtitle">Simple comme bonjour</p>
+<!-- ================= HERO ================= -->
+<section class="hero-wrapper">
+
+  <div class="hero-images-row">
+    <div class="hero-img-item pos-1"><img src="assets/images/img1.jpg" alt=""></div>
+    <div class="hero-img-item pos-2"><img src="assets/images/img2.jpg" alt=""></div>
+    <div class="hero-img-item pos-3"><img src="assets/images/img3.jpg" alt=""></div>
+    <div class="hero-img-item pos-4"><img src="assets/images/img4.jpg" alt=""></div>
+    <div class="hero-img-item pos-5"><img src="assets/images/img5.jpg" alt=""></div>
+  </div>
+
+ <div class="hero-center">
+  <h1>
+    Find your next <br>
+    <span>weekend meal idea</span>
+  </h1>
+
+  <!-- Search bar -->
+  <div class="hero-search">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      placeholder="Search for a recipe... e.g. chicken ramen"
+      (keyup.enter)="onSearch()" />
+    <button type="button" (click)="onSearch()">Search</button>
+  </div>
+
+  <!-- Search results -->
+  <div class="search-results" *ngIf="searchResults.length > 0">
+    <div class="search-result-item" *ngFor="let item of searchResults">
+      <img [src]="item.src" [alt]="item.name">
+      <span>{{ item.name }}</span>
+      <button type="button" class="btn-cart-small">
+        <i class="fa-solid fa-cart-plus"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="search-no-results" *ngIf="searchQuery && searchResults.length === 0 && searchDone">
+    <i class="fa-solid fa-face-sad-tear"></i> No results for "{{ searchQuery }}"
+  </div>
+
+  <div class="hero-dots">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+</div>
+
+  <a href="#features" class="scroll-down-btn">&#8964;</a>
+
+</section>
+<br><br>
+<br>
+<!-- ================= ABOUT SECTION ================= -->
+<section id="about" class="about-section fade-in">
+
+  <div class="about-collage">
+    <div class="collage-card card-tr">
+      <img src="assets/images/img6.jpg" alt="">
+    </div>
+    <div class="collage-card card-cyan">
+      <img src="assets/images/img7.jpg" alt="">
+    </div>
+    <div class="collage-card card-green">
+      <div class="fake-searchbar">
+        <span>🔍</span>
+        <span class="fake-query">easy homemade recipes</span>
+      </div>
+      <img src="assets/images/img8.jpg" alt="">
+    </div>
+    <div class="collage-card card-br">
+      <img src="assets/images/img9.jpg" alt="">
+    </div>
+  </div>
+
+  <div class="about-text">
+    <span class="about-eyebrow">About CookEat</span>
+    <h2>The passion for cooking, simplified for you.</h2>
+    <p>
+      CookEat was born from a simple idea: making home cooking accessible
+      to everyone, stress-free and hassle-free. Every week, we select
+      balanced and flavorful recipes, using fresh, local, and seasonal 
+      ingredients — delivered directly to your home.
+    </p>
+    <p>
+      Whether you're a beginner or a cooking enthusiast, CookEat guides you
+      step by step to transform your daily routine into a true culinary pleasure.
+      Because eating well starts with cooking well.
+    </p>
+    <a href="#menu" class="btn-about">Discover our recipes →</a>
+  </div>
+
+</section>
+<!-- ================= FEATURES BAR ================= -->
+<section id="features" class="features-bar">
+  <div class="feature-item">
+    <div class="feature-icon">🍴</div>
+    <p>Constantly renewed recipes</p>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">🛒</div>
+    <p>The joy of cooking without the chore of grocery shopping</p>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">🥕</div>
+    <p>100% seasonal vegetables<br>Zero Waste</p>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">💰</div>
+    <p>Decreasing prices...</p>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section id="about" class="how-it-works fade-in">
+  <h2>How does it work?</h2>
+  <p class="section-subtitle">Simple as can be</p>
 
   <div class="steps">
-
     <div class="step">
-      <img src="assets/box.png" alt="">
-      <h3>1. Choisissez vos recettes</h3>
-      <p>Parmi un large choix renouvelé chaque mois</p>
+      <div class="step-img-wrap">
+        <img src="assets/box.png" alt="Recipe box">
+      </div>
+      <h3>1. Choose your recipes</h3>
+      <p>From a wide selection renewed every month</p>
     </div>
-
     <div class="step">
-      <img src="assets/delivery.png" alt="">
-      <h3>2. Faites-vous livrer</h3>
-      <p>Livré directement chez vous</p>
+      <div class="step-img-wrap">
+        <img src="assets/delivery.png" alt="Delivery">
+      </div>
+      <h3>2. Get delivered</h3>
+      <p>Delivered directly to your home, at your chosen date and time</p>
     </div>
-
     <div class="step">
-      <img src="assets/cooking.png" alt="">
+      <div class="step-img-wrap">
+        <img src="assets/cooking.png" alt="Cooking">
+      </div>
       <h3>3. Cook, create, enjoy</h3>
-      <p>Préparez des repas savoureux</p>
+      <p>Prepare delicious homemade meals in less than 30 minutes</p>
     </div>
-
   </div>
 </section>
 
-<!-- TESTIMONIAL -->
+<!-- ================= MENU CAROUSEL ================= -->
+<section id="menu" class="menu-section fade-in">
+  <h2>Meals that make you hungry</h2>
+  <p class="section-subtitle-cursive">Authentic flavors, easy recipes!</p>
+
+  <div class="carousel-wrapper">
+    <button class="carousel-btn" type="button" (click)="prevSlide()">←</button>
+    <div class="carousel-track">
+  <div class="carousel-item" *ngFor="let item of getVisibleImages()" 
+     (click)="navigateToMeal(item.id)"
+     style="cursor: pointer">
+  <img [src]="item.src" [alt]="item.name">
+  <div class="carousel-overlay">
+    <span class="dish-name">{{ item.name }}</span>
+    <button class="btn-add-to-cart" type="button" (click)="$event.stopPropagation()">
+      <i class="fa-solid fa-cart-plus"></i> Add to Cart
+    </button>
+  </div>
+</div>
+</div>
+    <button class="carousel-btn" type="button" (click)="nextSlide()">→</button>
+  </div>
+
+  <button class="btn-start" type="button">Get Started</button>
+</section>
+
+<!-- ================= TESTIMONIAL ================= -->
 <section class="testimonial fade-in">
-  <h2>#TheyLovedCookit</h2>
+  <h2>#TheyLovedCookEat</h2>
 
-  <div class="testimonial-card">
-    <p>{{ testimonials[currentIndex].text }}</p>
+  <div class="testimonial-layout">
+    <button class="testi-arrow" type="button" (click)="prev()">←</button>
 
-    <div class="author">
-      <img src="assets/tomato.png" class="avatar" />
-      <h4>{{ testimonials[currentIndex].name }}</h4>
-    </div>
+    <div class="testimonial-card">
+      <div class="quote-icon">❝ </div>
+      <p>{{ testimonials[currentIndex].text }}</p>
+      <div class="author">
+  <img 
+    [src]="testimonials[currentIndex].avatar || 'assets/tomato.png'" 
+    class="avatar" 
+    [alt]="testimonials[currentIndex].name" 
+  />
+  <div>
+    <h4>{{ testimonials[currentIndex].name }}</h4>
+    <span class="author-tag">CookEat Fan</span>
   </div>
+</div>
+    </div>
 
-  <div class="controls">
-    <button (click)="prev()">←</button>
-    <button (click)="next()">→</button>
+    <button class="testi-arrow" type="button" (click)="next()">→</button>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-logo">
-    Coo <img src="assets/tomato.png" class="logo-img" /> kit
-    <p>Le chef c’est vous, le reste c’est nous</p>
+<!--Footer-->
+
+<footer id="contact" class="footer">
+
+  <!-- Column 1: Logo + description -->
+  <div class="footer-col footer-brand">
+    <img src="assets/tomato.png" class="footer-logo-img" alt="CookEat Logo" />
+    <p class="footer-tagline">You're the chef, we handle the rest</p>
+    <p class="footer-desc">
+      No more trips to the supermarket and waiting in endless
+      queues. Cookeat gives you access to new recipes every month.
+      Healthy or indulgent, local or international, there's something
+      for every taste.
+    </p>
   </div>
 
-  <div class="footer-links">
-    <h4>Liens utiles</h4>
-    <p>Au menu</p>
-    <p>Le concept</p>
+  <!-- Column 2: Useful links -->
+  <div class="footer-col footer-links">
+    <h4>Useful Links</h4>
+    <a href="#menu">On the Menu</a>
+    <a href="#">My Account</a>
+    <a href="#about">How does it work?</a>
+    <a href="#">Our Commitments</a>
   </div>
 
-  <div class="footer-contact">
-    <h4>Nous contacter</h4>
-    <p>+216 29 019 029</p>
-    <p>contact@cookit.tn</p>
+  <!-- Column 3: Contact + social media -->
+  <div class="footer-col footer-contact">
+    <h4>Contact Us</h4>
+
+    <div class="contact-item">
+      <i class="fa-solid fa-phone contact-icon"></i>
+      <span>+216 29 019 029</span>
+    </div>
+
+    <div class="contact-item">
+      <i class="fa-solid fa-envelope contact-icon"></i>
+      <span>contact@cookeat.tn</span>
+    </div>
+
+    <div class="social-links">
+      <a href="#" class="social-btn" aria-label="Instagram">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+      <a href="#" class="social-btn" aria-label="Facebook">
+        <i class="fa-brands fa-facebook-f"></i>
+      </a>
+      <a href="#" class="social-btn" aria-label="TikTok">
+        <i class="fa-brands fa-tiktok"></i>
+      </a>
+      <a href="#" class="social-btn" aria-label="YouTube">
+        <i class="fa-brands fa-youtube"></i>
+      </a>
+    </div>
   </div>
+<!-- Hidden admin access — invisible to users -->
+<div class="admin-secret-zone" routerLink="/login">
+</div>
 </footer>
+<!-- GO TO TOP -->
+<button type="button" class="go-to-top" [class.visible]="showGoToTop" (click)="scrollToTop()">↑</button>

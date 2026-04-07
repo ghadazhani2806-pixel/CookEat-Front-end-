@@ -1,0 +1,230 @@
+<div class="meal-detail-page" *ngIf="meal">
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" [class.scrolled]="navScrolled">
+    <div class="logo">
+      <a routerLink="/"><img src="assets/tomato.png" class="logo-img" alt="CookEat"></a>
+    </div>
+    <ul class="nav-links">
+      <li><a routerLink="/" fragment="about">The Concept</a></li>
+      <li><a routerLink="/" fragment="menu">On the Menu</a></li>
+      <li><a routerLink="/" fragment="contact">Need Help?</a></li>
+    </ul>
+    <div class="navbar-right">
+      <ng-container *ngIf="isLoggedIn">
+        <a routerLink="/cart"    class="nav-icon-link"><i class="fa-solid fa-cart-shopping"></i></a>
+        <a routerLink="/profile" class="btn-client"><i class="fa-solid fa-user"></i> My Profile</a>
+      </ng-container>
+      <a routerLink="/login" class="btn-client" *ngIf="!isLoggedIn">
+        <i class="fa-solid fa-user"></i> Login
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===== BREADCRUMB ===== -->
+  <div class="breadcrumb-bar">
+    <a routerLink="/"><i class="fa-solid fa-house"></i> Home</a>
+    <span>/</span>
+    <a routerLink="/" fragment="menu">Menu</a>
+    <span>/</span>
+    <span>{{ meal.name }}</span>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <div class="meal-hero">
+    <div class="meal-hero-img">
+      <img [src]="meal.image" [alt]="meal.name">
+      <span class="meal-category-badge">{{ meal.category }}</span>
+    </div>
+
+    <div class="meal-hero-info">
+
+      <div class="meal-tags">
+        <span class="tag" *ngFor="let tag of meal.tags">{{ tag }}</span>
+      </div>
+
+      <h1>{{ meal.name }}</h1>
+
+      <div class="meal-rating">
+        <div class="stars">
+          <i class="fa-solid fa-star" *ngFor="let s of getStars(meal.rating)" [class.empty]="!s"></i>
+        </div>
+        <span class="rating-value">{{ meal.rating }}</span>
+        <span class="rating-count">({{ meal.reviews }} reviews)</span>
+      </div>
+
+      <p class="meal-description">{{ meal.description }}</p>
+
+      <!-- Meta info -->
+      <div class="meal-meta">
+        <div class="meta-item">
+          <i class="fa-regular fa-clock"></i>
+          <div>
+            <span class="meta-label">Duration</span>
+            <span class="meta-value">{{ meal.duration }} min</span>
+          </div>
+        </div>
+        <div class="meta-item">
+          <i class="fa-solid fa-signal"></i>
+          <div>
+            <span class="meta-label">Difficulty</span>
+            <span class="meta-value" [style.color]="getDifficultyColor(meal.difficulty)">
+              {{ meal.difficulty }}
+            </span>
+          </div>
+        </div>
+        <div class="meta-item">
+          <i class="fa-solid fa-users"></i>
+          <div>
+            <span class="meta-label">Servings</span>
+            <span class="meta-value">2 people</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Price + quantity + add to cart -->
+      <div class="meal-order">
+        <div class="meal-price">{{ meal.price }} DT</div>
+
+        <div class="qty-control">
+          <button (click)="decrement()">−</button>
+          <span>{{ quantity }}</span>
+          <button (click)="increment()">+</button>
+        </div>
+
+        <button class="btn-add-cart" (click)="addToCart()" [class.added]="addedToCart">
+          <i class="fa-solid" [class]="addedToCart ? 'fa-circle-check' : 'fa-cart-plus'"></i>
+          {{ addedToCart ? 'Added to cart!' : 'Add to Cart' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TABS ===== -->
+  <div class="meal-tabs-bar">
+    <div class="meal-tabs">
+      <button [class.active]="activeTab === 'ingredients'" (click)="activeTab = 'ingredients'">
+        <i class="fa-solid fa-list"></i> Ingredients
+      </button>
+      <button [class.active]="activeTab === 'recipe'" (click)="activeTab = 'recipe'">
+        <i class="fa-solid fa-hat-chef"></i> Recipe
+      </button>
+      <button [class.active]="activeTab === 'nutrition'" (click)="activeTab = 'nutrition'">
+        <i class="fa-solid fa-heart-pulse"></i> Nutrition
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== TAB CONTENT ===== -->
+  <div class="meal-body">
+
+    <!-- INGREDIENTS -->
+    <div class="tab-panel" *ngIf="activeTab === 'ingredients'">
+      <div class="panel-card">
+        <h3>What you'll need</h3>
+        <div class="ingredients-grid">
+          <div class="ingredient-item" *ngFor="let ing of meal.ingredients">
+            <span class="ing-icon">{{ ing.icon }}</span>
+            <div class="ing-info">
+              <span class="ing-name">{{ ing.name }}</span>
+              <span class="ing-qty">{{ ing.quantity }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECIPE -->
+    <div class="tab-panel" *ngIf="activeTab === 'recipe'">
+      <div class="panel-card">
+        <h3>Step by step</h3>
+        <div class="steps-list">
+          <div class="recipe-step" *ngFor="let step of meal.steps">
+            <div class="step-number">{{ step.number }}</div>
+            <div class="step-content">
+              <div class="step-header">
+                <h4>{{ step.title }}</h4>
+                <span class="step-duration" *ngIf="step.duration">
+                  <i class="fa-regular fa-clock"></i> {{ step.duration }}
+                </span>
+              </div>
+              <p>{{ step.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NUTRITION -->
+    <div class="tab-panel" *ngIf="activeTab === 'nutrition'">
+      <div class="panel-card">
+        <h3>Nutritional information</h3>
+        <p class="nutrition-note">Per serving (approx.)</p>
+        <div class="nutrition-grid">
+          <div class="nutrition-card" *ngFor="let n of meal.nutrition">
+            <span class="nutrition-icon">{{ n.icon }}</span>
+            <span class="nutrition-value">{{ n.value }}</span>
+            <span class="nutrition-label">{{ n.label }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== SIMILAR MEALS ===== -->
+  <div class="similar-section" *ngIf="similarMeals.length > 0">
+    <div class="similar-inner">
+      <h2>You might also like</h2>
+      <div class="similar-grid">
+        <div class="similar-card" *ngFor="let m of similarMeals" [routerLink]="['/meal', m.id]">
+          <div class="similar-img">
+            <img [src]="m.image" [alt]="m.name">
+          </div>
+          <div class="similar-info">
+            <h4>{{ m.name }}</h4>
+            <div class="similar-meta">
+              <span><i class="fa-regular fa-clock"></i> {{ m.duration }} min</span>
+              <span class="similar-price">{{ m.price }} DT</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-col footer-brand">
+      <img src="assets/tomato.png" class="footer-logo-img" alt="CookEat Logo" />
+      <p class="footer-tagline">You're the chef, we handle the rest</p>
+      <p class="footer-desc">No more trips to the supermarket. CookEat gives you access to new recipes every month.</p>
+    </div>
+    <div class="footer-col footer-links">
+      <h4>Useful Links</h4>
+      <a routerLink="/">Home</a>
+      <a routerLink="/cart">My Cart</a>
+      <a routerLink="/orders">My Orders</a>
+    </div>
+    <div class="footer-col footer-contact">
+      <h4>Contact Us</h4>
+      <div class="contact-item"><i class="fa-solid fa-phone contact-icon"></i><span>+216 29 019 029</span></div>
+      <div class="contact-item"><i class="fa-solid fa-envelope contact-icon"></i><span>contact@cookeat.tn</span></div>
+      <div class="social-links">
+        <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-youtube"></i></a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- 404 fallback -->
+<div class="not-found" *ngIf="!meal">
+  <i class="fa-solid fa-bowl-food fa-3x"></i>
+  <h2>Meal not found</h2>
+  <a routerLink="/">Back to home</a>
+</div>
