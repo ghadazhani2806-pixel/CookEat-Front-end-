@@ -40,7 +40,6 @@ export class CartComponent {
   logout() { this.auth.logout(); }
 
   // ===================== CART ITEMS =====================
-  // Mock data — replace with API call later
   items: CartItem[] = [
     { id: 1, name: 'Ramen au poulet',      category: 'Gourmet',    price: 28, quantity: 2, image: 'assets/images/menu1.jpg' },
     { id: 2, name: 'Salade Quinoa',        category: 'Healthy',    price: 22, quantity: 1, image: 'assets/images/menu2.jpg' },
@@ -90,11 +89,14 @@ export class CartComponent {
 
   checkout() {
     if (this.items.length === 0) return;
-    // TODO: call API create_from_cart
-    this.checkoutDone = true;
-    setTimeout(() => {
-      this.items = [];
-      this.router.navigate(['/orders']);
-    }, 2000);
+    
+    // Sauvegarder les données du panier pour la page de paiement
+    localStorage.setItem('cartItems', JSON.stringify(this.items));
+    localStorage.setItem('cartSubtotal', this.subtotal.toString());
+    localStorage.setItem('cartDeliveryFee', this.deliveryFee.toString());
+    localStorage.setItem('cartTotal', this.total.toString());
+    
+    // Rediriger vers la page de paiement
+    this.router.navigate(['/payment']);
   }
 }
